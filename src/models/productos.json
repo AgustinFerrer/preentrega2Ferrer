@@ -1,0 +1,50 @@
+[
+    {
+      "title": "TE",
+      "description": "hierba",
+      "price": "150",
+      "img": "Sin Imagen",
+      "code": "abc123",
+      "stock": "200",
+      "category": "Almacen",
+      "status": true,
+      "thumbnails": [],
+      "id": 1
+    },
+    {
+      "title": "Ajo",
+      "description": "Saludable",
+      "price": "250",
+      "img": "Sin Imagen",
+      "code": "abc124",
+      "stock": "150",
+      "category": "verduleria",
+      "status": true,
+      "thumbnails": [],
+      "id": 2
+    },
+    {
+      "title": "Harina",
+      "description": "blancaflor",
+      "price": "400",
+      "img": "Sin Imagen",
+      "code": "abc125",
+      "stock": "150",
+      "category": "Almacen",
+      "status": true,
+      "thumbnails": [],
+      "id": 3
+    },
+    {
+      "title": "pizza",
+      "description": "fugazzeta",
+      "price": "1500",
+      "img": "Sin Imagen",
+      "code": "abc126",
+      "stock": "200",
+      "category": "Almacen",
+      "status": true,
+      "thumbnails": [],
+      "id": 4
+    }
+  ]
