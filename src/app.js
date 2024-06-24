@@ -1,18 +1,42 @@
-import express from "express";
-import productsRouter from "./routes/products.router.js";
-import cartsRouter from "./routes/carts.router.js";
-
+const express = require('express');
+const { Server } = require('socket.io');
+const http = require('http');
+const { engine } = require('express-handlebars');
+const path = require('path');
 const app = express();
-const PUERTO = 8080;
 
-// Middleware
-app.use(express.urlencoded({ extended: true }));
+// Configuración de Handlebars
+app.engine('handlebars', engine());
+app.set('view engine', 'handlebars');
+app.set('views', path.join(__dirname, 'views'));
+
+// Middlewares
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Rutas
-app.use("/api/products", productsRouter);
-app.use("/api/carts", cartsRouter);
+const productsRouter = require('./routes/products');
+const cartsRouter = require('./routes/carts');
+const viewsRouter = require('./routes/views');
 
-app.listen(PUERTO, () => {
-    console.log(`Servidor escuchando en el puerto ${PUERTO}`);
+app.use('/api/products', productsRouter);
+app.use('/api/carts', cartsRouter);
+app.use('/', viewsRouter);
+
+// Configuración del servidor HTTP y Socket.io
+const server = http.createServer(app);
+const io = new Server(server);
+
+io.on('connection', (socket) => {
+    console.log('New client connected');
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    });
 });
+
+const PORT = 8080;
+server.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+module.exports = io;

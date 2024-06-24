@@ -1,8 +1,8 @@
 const express = require('express');
 const fs = require('fs');
 const router = express.Router();
-const filePath = './models/products.json';
-
+const filePath = './data/products.json';
+const io = require('../app');  // Importa el servidor Socket.io
 
 const readData = () => {
     const data = fs.readFileSync(filePath);
@@ -13,14 +13,19 @@ const writeData = (data) => {
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 };
 
+const updateClients = () => {
+    const products = readData();
+    io.emit('updateProducts', products);
+};
 
+// Obtener todos los productos (con limitación ?limit)
 router.get('/', (req, res) => {
     const products = readData();
     const limit = req.query.limit ? parseInt(req.query.limit) : products.length;
     res.json(products.slice(0, limit));
 });
 
-
+// Obtener un producto por ID
 router.get('/:pid', (req, res) => {
     const products = readData();
     const product = products.find(p => p.id === req.params.pid);
@@ -31,7 +36,7 @@ router.get('/:pid', (req, res) => {
     }
 });
 
-
+// Agregar un nuevo producto
 router.post('/', (req, res) => {
     const products = readData();
     const newProduct = {
@@ -52,10 +57,11 @@ router.post('/', (req, res) => {
 
     products.push(newProduct);
     writeData(products);
+    updateClients();  // Emitir evento de actualización
     res.status(201).json(newProduct);
 });
 
-
+// Actualizar un producto
 router.put('/:pid', (req, res) => {
     const products = readData();
     const productIndex = products.findIndex(p => p.id === req.params.pid);
@@ -63,17 +69,19 @@ router.put('/:pid', (req, res) => {
         const product = products[productIndex];
         Object.assign(product, req.body);
         writeData(products);
+        updateClients();  // Emitir evento de actualización
         res.json(product);
     } else {
         res.status(404).send('Product not found');
     }
 });
 
-
+// Eliminar un producto
 router.delete('/:pid', (req, res) => {
     let products = readData();
     products = products.filter(p => p.id !== req.params.pid);
     writeData(products);
+    updateClients();  // Emitir evento de actualización
     res.status(204).send();
 });
 
