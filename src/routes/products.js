@@ -1,8 +1,10 @@
 const express = require('express');
 const fs = require('fs');
+const path = require('path');
 const router = express.Router();
-const filePath = './data/products.json';
 const io = require('../app');  // Importa el servidor Socket.io
+
+const filePath = path.join(__dirname, '../data/products.json');
 
 const readData = () => {
     const data = fs.readFileSync(filePath);
@@ -57,7 +59,7 @@ router.post('/', (req, res) => {
 
     products.push(newProduct);
     writeData(products);
-    updateClients();  // Emitir evento de actualización
+    updateClients();
     res.status(201).json(newProduct);
 });
 
@@ -69,7 +71,7 @@ router.put('/:pid', (req, res) => {
         const product = products[productIndex];
         Object.assign(product, req.body);
         writeData(products);
-        updateClients();  // Emitir evento de actualización
+        updateClients();
         res.json(product);
     } else {
         res.status(404).send('Product not found');
@@ -81,7 +83,7 @@ router.delete('/:pid', (req, res) => {
     let products = readData();
     products = products.filter(p => p.id !== req.params.pid);
     writeData(products);
-    updateClients();  // Emitir evento de actualización
+    updateClients();
     res.status(204).send();
 });
 

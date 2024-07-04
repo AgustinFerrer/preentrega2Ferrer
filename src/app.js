@@ -1,9 +1,12 @@
 const express = require('express');
+const { createServer } = require('http');
 const { Server } = require('socket.io');
-const http = require('http');
 const { engine } = require('express-handlebars');
 const path = require('path');
+
 const app = express();
+const server = createServer(app);
+const io = new Server(server);
 
 // Configuración de Handlebars
 app.engine('handlebars', engine());
@@ -23,10 +26,7 @@ app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/', viewsRouter);
 
-// Configuración del servidor HTTP y Socket.io
-const server = http.createServer(app);
-const io = new Server(server);
-
+// Configuración de Socket.io
 io.on('connection', (socket) => {
     console.log('New client connected');
     socket.on('disconnect', () => {
